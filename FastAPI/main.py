@@ -51,5 +51,5 @@ def eliminar(id:int):
         if usr["id"]==id:
             usuarios.remove(usr)
             return {"Usuario Eliminado":usr}
-    raise HTTPException(status_code=404,detail="El usuario no existe")
+    raise HTTPException(status_code=404,detail="Hijole no existe el usuario")
 
