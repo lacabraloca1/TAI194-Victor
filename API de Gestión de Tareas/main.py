@@ -55,38 +55,3 @@ def Home():
 def obtener_todas_tareas():
     return {"Tareas Registradas": Tareas}
 
-# Endpoint para obtener una tarea específica por su ID
-@app.get("/tareas/{id}", tags=["Obtener una tarea específica por su ID"])
-def obtener_tarea_id(id: int):
-    for t in Tareas:
-        if t["id"] == id:
-            return t
-    raise HTTPException(status_code=404, detail="La tarea no existe")
-
-# Endpoint para crear una nueva tarea
-@app.post("/tareas/", tags=["Crear una nueva tarea"])
-def insertar_tarea(tarea: dict):
-    for t in Tareas:
-        if t["id"] == tarea.get("id"):
-            raise HTTPException(status_code=400, detail="La tarea ya existe")
-    
-    Tareas.append(tarea)
-    return tarea
-
-# Endpoint para actualizar una tarea existente
-@app.put("/tareas/{id}", tags=["Actualizar una tarea existente"])
-def actualizar_tarea(id: int, tarea_actualizada: dict):
-    for index, t in enumerate(Tareas):
-        if t["id"] == id:
-            Tareas[index].update(tarea_actualizada)
-            return Tareas[index]
-    raise HTTPException(status_code=404, detail="La tarea no existe")
-
-# Endpoint para eliminar una tarea
-@app.delete("/tareas/{id}", tags=["Eliminar una tarea"])
-def eliminar_tarea(id: int):
-    for t in Tareas:
-        if t["id"] == id:
-            Tareas.remove(t)
-            return {"Tarea Eliminada": t}
-    raise HTTPException(status_code=404, detail="La tarea no existe")
