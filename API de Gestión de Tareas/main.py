@@ -73,4 +73,14 @@ def insertar_tarea(tarea: dict):
     Tareas.append(tarea)
     return tarea
 
+# Endpoint para actualizar una tarea existente
+@app.put("/tareas/{id}", tags=["Actualizar una tarea existente"])
+def actualizar_tarea(id: int, tarea_actualizada: dict):
+    for index, t in enumerate(Tareas):
+        if t["id"] == id:
+            Tareas[index].update(tarea_actualizada)
+            return Tareas[index]
+    raise HTTPException(status_code=404, detail="La tarea no existe")
+
+
 
