@@ -55,3 +55,12 @@ def Home():
 def obtener_todas_tareas():
     return {"Tareas Registradas": Tareas}
 
+# Endpoint para obtener una tarea específica por su ID
+@app.get("/tareas/{id}", tags=["Obtener una tarea específica por su ID"])
+def obtener_tarea_id(id: int):
+    for t in Tareas:
+        if t["id"] == id:
+            return t
+    raise HTTPException(status_code=404, detail="La tarea no existe")
+
+
