@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, HTTPException , Depends
+from fastapi import FastAPI, HTTPException, Depends
 from models import modelAuth, modelUsuario
 from gentoken import create_token
 from fastapi.responses import JSONResponse
@@ -25,18 +25,18 @@ usuarios = [
 def Home():
     return {"message": "Bienvenido a mi API"}
 
-#Endpoint para generar tok
+# Endpoint para generar token
 @app.post("/auth", tags=["Autenticacion"])
-def auth(credenciales:modelAuth):
-    if credenciales.mail == "victor@example.com" and credenciales.passwd == "123456789":
-        token:str = create_token(credenciales.model_dump())
+def auth(credenciales: modelAuth):
+    if credenciales.mail == "victor@gmail.com" and credenciales.passwd == "123456789":
+        token: str = create_token(credenciales.model_dump())
         print(token)
         return JSONResponse(content={"token": token})
     else:
-        return {"Aviso": "Usuario no cuenta con permiso"}
+        return {"Aviso": "Usuario no cuenta con permiso"}
 
 # Endpoint GET - Obtener todos los usuarios
-@app.get("/todoUsuarios", dependencies= [Depends(BearerJWT())],response_model=List[modelUsuario], tags=["Operaciones CRUD"])
+@app.get("/todoUsuarios", dependencies=[Depends(BearerJWT())], response_model=List[modelUsuario], tags=["Operaciones CRUD"])
 def leer():
     return [modelUsuario(**usr) for usr in usuarios]  
 
@@ -49,7 +49,7 @@ def insert(usuario: modelUsuario):
         if usr["id"] == usuario.id:
             raise HTTPException(status_code=400, detail="El usuario ya existe")
     
-    usuarios.append(usuario.model_dump())  # Convertir a diccionario antes de agregar
+    usuarios.append(usuario.model_dump())
     return usuario
 
 # Endpoint PUT - Actualizar usuario
@@ -59,7 +59,7 @@ def insert(usuario: modelUsuario):
 def actualizar(id: int, usuario_actualizado: modelUsuario):
     for index, usr in enumerate(usuarios):
         if usr["id"] == id:
-            usuarios[index] = usuario_actualizado.model_dump()  # Convertir a dict
+            usuarios[index] = usuario_actualizado.model_dump()
             return usuario_actualizado
     raise HTTPException(status_code=404, detail="El usuario no existe")
 
