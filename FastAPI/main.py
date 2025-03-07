@@ -1,7 +1,9 @@
-from fastapi import FastAPI, HTTPException
 from typing import List
+from fastapi import FastAPI, HTTPException , Depends
 from models import modelAuth, modelUsuario
 from gentoken import create_token
+from fastapi.responses import JSONResponse
+from Middlewares import BearerJWT
 
 app = FastAPI(
     title="Mi primer API",
@@ -26,17 +28,17 @@ def Home():
 #Endpoint para generar tok
 @app.post("/auth", tags=["Autenticacion"])
 def auth(credenciales:modelAuth):
-    if credenciales.mail == "arte@example.com" and credenciales.passw == "123456789":
+    if credenciales.mail == "victor@example.com" and credenciales.passwd == "123456789":
         token:str = create_token(credenciales.model_dump())
         print(token)
-        return {"token": "Token Generado"}
+        return JSONResponse(content={"token": token})
     else:
         return {"Aviso": "Usuario no cuenta con permiso"}
 
 # Endpoint GET - Obtener todos los usuarios
-@app.get("/todoUsuarios", response_model=List[modelUsuario], tags=["Operaciones CRUD"])
+@app.get("/todoUsuarios", dependencies= [Depends(BearerJWT())],response_model=List[modelUsuario], tags=["Operaciones CRUD"])
 def leer():
-    return [modelUsuario(**usr) for usr in usuarios]  # Convertir a modelo Pydantic
+    return [modelUsuario(**usr) for usr in usuarios]  
 
 # Endpoint POST - Insertar usuario
 @app.post("/Usuarios/", response_model=modelUsuario, tags=["Operaciones CRUD"], responses={
