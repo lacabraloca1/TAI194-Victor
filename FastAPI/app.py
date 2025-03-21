@@ -1,15 +1,19 @@
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends
-from models import modelAuth, modelUsuario
+from modelsPydantic import modelAuth, modelUsuario
 from gentoken import create_token
 from fastapi.responses import JSONResponse
 from Middlewares import BearerJWT
+from DB.conexion import Session , engine, Base
+from models.modelsDB import User
 
 app = FastAPI(
     title="Mi primer API",
     description="Victor O.O",
     version="1.0.1"
 )
+
+Base.metadata.create_all(bind=engine)
 
 # Lista de usuarios simulando una BD
 usuarios = [
@@ -44,13 +48,17 @@ def leer():
 @app.post("/Usuarios/", response_model=modelUsuario, tags=["Operaciones CRUD"], responses={
     400: {"description": "El usuario ya existe"}
 })
-def insert(usuario: modelUsuario):
-    for usr in usuarios:
-        if usr["id"] == usuario.id:
-            raise HTTPException(status_code=400, detail="El usuario ya existe")
-    
-    usuarios.append(usuario.model_dump())
-    return usuario
+def guardar(usuario: modelUsuario):
+    db = Session()
+    try:
+        db.add(User(**usuario.model_dump()))
+        db.commit()
+        return JSONResponse(status_code=201, content={"message": "Usuario creado", "usuario": usuario.model_dump()})
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"message": "Error al crear usuario", "error": str(e)})
+    finally:
+        db.close()  
 
 # Endpoint PUT - Actualizar usuario
 @app.put("/Usuarios/{id}", tags=["Operaciones CRUD"], responses={
