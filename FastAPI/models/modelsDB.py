@@ -7,6 +7,3 @@ class User(Base):
     name = Column(String)
     age = Column(Integer)
     email = Column(String)
-    password = Column(String)
-    def __repr__(self):
-        return f'<User {self.name}>'
